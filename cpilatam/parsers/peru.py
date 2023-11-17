@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+"""This module contains a parser for the Peruvian CPI data."""
+
 import pandas as pd
 import pandera as pa
 import requests
