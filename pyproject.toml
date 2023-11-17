@@ -1,6 +1,6 @@
 [tool.poetry]
-name ="cpi-latam"
-version = "0.1.0"
+name ="cpilatam"
+version = "2023.11.1"
 description = "cpi-latam is a Python library designed to simplify the retrieval of Consumer Price Index (CPI) values from the central banks of countries in Latin America"
 authors = ["Santiago Armstrong <santiagoarmstrong@gmail.com>"]
 maintainers = ["Santiago Armstrong <santiagoarmstrong@gmail.com>"]
@@ -10,13 +10,12 @@ maintainers = ["Santiago Armstrong <santiagoarmstrong@gmail.com>"]
 python = ">=3.9,<3.11"
 structlog = "*"
 python-dotenv = "*"
-pydantic = "*"
 pandas = "*"
 pandera = "*"
-bs4 = "^0.0.1"
-requests = "^2.31.0"
-lxml = "^4.9.3"
-dateparser = "^1.2.0"
+pydantic = ">=1.10.0,<2.0.0"
+bs4 = ">=0.0.1"
+requests = ">=2.31.0"
+lxml = ">=4.9.3"
 
 
 [tool.poetry.group.dev.dependencies]
