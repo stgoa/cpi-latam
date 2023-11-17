@@ -6,8 +6,10 @@ import pandera as pa
 import requests
 from bs4 import BeautifulSoup
 
+from cpilatam.parsers.base import BaseCPIParser
 
-class PeruCPIParser:
+
+class PeruCPIParser(BaseCPIParser):
     spa_month_dict = {
         "Ene": 1,
         "Feb": 2,
@@ -25,9 +27,9 @@ class PeruCPIParser:
     BASE_URL = "https://estadisticas.bcrp.gob.pe/estadisticas/series/mensuales/resultados/PN38705PM/html"
 
     def __init__(self, start_date="1949-1", end_date="2023-12"):
-        self.url = self.BASE_URL + f"/{start_date}/{end_date}"
-        self.data = None
-        self.reference_date = None
+        super().__init__(
+            url=self.BASE_URL + f"/{start_date}/{end_date}", start_date=start_date, end_date=end_date
+        )
 
     def convert_spanish_date_to_numeric_date(self, date_str: str) -> str:
         """Converts a Spanish date string to a numeric date string.
@@ -134,6 +136,12 @@ class PeruCPIParser:
         else:
             print("No data to parse. Please run the 'download' method first.")
             return None
+
+    def read(self, path: str = None):
+        if path is None:
+            path = "./data/peru_cpi.csv"
+        self.data = pd.read_csv(path)
+        return self.data
 
 
 if __name__ == "__main__":
