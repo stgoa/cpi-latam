@@ -89,10 +89,16 @@ class Settings(BaseSettings):
     LOG_DESTINATION: LogDest = LogDest.CONSOLE.value
     """Destination for logs."""
 
+    COLOMBIA_LOCAL_PATH: Path = Path(PACKAGE_PATH.parent, "data", "colombia_cpi.xlsx")
+    """Path to local file with Colombia CPI data."""
+
+    PERU_LOCAL_PATH: Path = Path(PACKAGE_PATH.parent, "data", "peru_cpi.csv")
+    """Path to local file with Peru CPI data."""
+
     class Config:
         """Inner configuration."""
 
-        env_prefix = "SERIATION_"
+        env_prefix = "CPILATAM_"
         use_enum_values = True
 
 
