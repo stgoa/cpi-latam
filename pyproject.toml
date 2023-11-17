@@ -1,0 +1,38 @@
+[tool.poetry]
+name ="cpi-latam"
+version = "0.1.0"
+description = "cpi-latam is a Python library designed to simplify the retrieval of Consumer Price Index (CPI) values from the central banks of countries in Latin America"
+authors = ["Santiago Armstrong <santiagoarmstrong@gmail.com>"]
+maintainers = ["Santiago Armstrong <santiagoarmstrong@gmail.com>"]
+
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.11"
+structlog = "*"
+python-dotenv = "*"
+pydantic = "*"
+pandas = "*"
+pandera = "*"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=7.1.3,<8.0.0"
+autopep8 = "^2.0.2"
+docformatter = "^1.7.5"
+pylint = "^2.17.5"
+flake8 = "^6.1.0"
+mypy = "^1.4.1"
+isort = "^5.12.0"
+bandit = "^1.7.5"
+black = "^23.7.0"
+pre-commit = "^3.3.3"
+coverage ="*"
+pytest-cov = "*"
+pytest-env = "*"
+
+[tool.black]
+line-length = 79
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.mansonry.api"
