@@ -1,34 +1,30 @@
 # -*- coding: utf-8 -*-
 """This module contains a parser for the Peruvian CPI data."""
 
+from datetime import date
+
 import pandas as pd
-import pandera as pa
 import requests
 from bs4 import BeautifulSoup
 
-from cpilatam.parsers.base import BaseCPIParser
+from cpilatam.parsers.base import CPI_SCHEMA, BaseCPIParser
 
 
 class PeruCPIParser(BaseCPIParser):
-    spa_month_dict = {
-        "Ene": 1,
-        "Feb": 2,
-        "Mar": 3,
-        "Abr": 4,
-        "May": 5,
-        "Jun": 6,
-        "Jul": 7,
-        "Ago": 8,
-        "Sep": 9,
-        "Oct": 10,
-        "Nov": 11,
-        "Dic": 12,
-    }
-    BASE_URL = "https://estadisticas.bcrp.gob.pe/estadisticas/series/mensuales/resultados/PN38705PM/html"
+    BASE_URL = (
+        "https://estadisticas.bcrp.gob.pe/estadisticas/"
+        "series/mensuales/resultados/PN38705PM/html/{start_date}/{end_date}"
+    )
 
-    def __init__(self, start_date="1949-1", end_date="2023-12"):
+    def __init__(
+        self,
+    ):
+        start_date = date(1991, 1, 1).strftime("%Y-%-m")
+        end_date = date.today().strftime("%Y-%-m")
         super().__init__(
-            url=self.BASE_URL + f"/{start_date}/{end_date}", start_date=start_date, end_date=end_date
+            url=self.BASE_URL.format(start_date=start_date, end_date=end_date),
+            source_format="html",
+            country="Peru",
         )
 
     def convert_spanish_date_to_numeric_date(self, date_str: str) -> str:
@@ -46,7 +42,7 @@ class PeruCPIParser(BaseCPIParser):
         """
         month = date_str[:3]
         year = date_str[3:]
-        month_num = self.spa_month_dict[month]
+        month_num = self.month_map[month]
         new_date = f"{month_num:02}-{year}"
         return new_date
 
@@ -113,25 +109,17 @@ class PeruCPIParser(BaseCPIParser):
             # rename the columns
             self.data.columns = ["date", "CPI"]
 
-            # Define the schema for the DataFrame
-            schema = pa.DataFrameSchema(
-                {
-                    "date": pa.Column(pa.String, regex=r"^[a-zA-Z]{3}\d{2}$", name="date"),
-                    "CPI": pa.Column(pa.Float, name="CPI"),
-                }
-            )
-
-            # Validate and parse the DataFrame
-            validated_data = schema.validate(self.data)
-
             # Extract year and month from the "Fecha" column
-            validated_data = self.parse_spanish_date_col(validated_data)
+            self.data = self.parse_spanish_date_col(self.data)
 
             # Add the reference date to the DataFrame
-            validated_data["reference_date"] = self.reference_date
+            self.data["reference_date"] = self.reference_date
 
             # Select and reorder columns
-            return validated_data[["date", "reference_date", "CPI"]]
+            self.data = self.data[["date", "reference_date", "CPI"]]
+
+            # Validate and parse the DataFrame
+            self.data = CPI_SCHEMA.validate(self.data)
 
         else:
             print("No data to parse. Please run the 'download' method first.")
