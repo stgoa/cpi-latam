@@ -41,26 +41,30 @@ CPI_SCHEMA = DataFrameSchema(
 class BaseCPIParser(ABC):
     """Base class for CPI parsers."""
 
-    def __init__(self, url: str, start_date: date, end_date: date):
+    def __init__(self, url: str, source_format: str, country: str):
         """Initializes the parser.
 
         Args:
             url (str): The url to the source data.
-            start_date (date): The start date of the data.
-            end_date (date): The end date of the data.
+            source_format (str): The format of the source data (e.g. csv, xls, etc.)
+            country (str): The country of the CPI data.
 
         Attributes:
             url (str): The url to the source data.
-            start_date (date): The start date of the data.
-            end_date (date): The end date of the data.
             data (pd.DataFrame): The data in a pandas DataFrame with the universal schema.
             reference_date (date): The reference/pivot for the CPI valuees.
+            start_date (date): The start date of the CPI data.
+            end_date (date): The end date of the CPI data.
+            source_format (str): The format of the source data (e.g. csv, xls, etc.)
+            country (str): The country of the CPI data.
         """
         self.url: str = url
-        self.start_date: date = start_date
-        self.end_date: date = end_date
         self.data: pd.DataFrame = None
         self.reference_date: date = None
+        self.start_date: date = None
+        self.end_date: date = None
+        self.source_format: str = source_format
+        self.country: str = country
 
     @abstractmethod
     def parse(self) -> DataFrame[CPI_SCHEMA]:
@@ -73,10 +77,10 @@ class BaseCPIParser(ABC):
 
     @abstractmethod
     def download(self) -> None:
-        """Downloads the data from the internet and saves it to a local file."""
+        """Downloads the data from the internet and saves it to a local file in csv format."""
         pass
 
     @abstractmethod
     def read(self) -> None:
-        """Reads the data from the local file into a pandas DataFrame."""
+        """Reads the data from the local csv file into a pandas DataFrame."""
         pass
