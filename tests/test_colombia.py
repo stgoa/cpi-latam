@@ -22,5 +22,8 @@ class TestColombiaParser:
         # read data
         self.parser.download()
 
+        # proceed to parse the data
+        self.parser.parse()
+
         # assert that the schema is correct
         CPI_SCHEMA.validate(self.parser.data)
