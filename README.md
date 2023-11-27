@@ -5,7 +5,7 @@ Install project locally (this will also install dev requirements)
 
 ```python
 # create a virtual env
-python3.9 -m venv .env
+python3.9 -m venv .venv
 # activate it (alternatively use poetry shell)
 source .venv/bin/activate
 # install dependencies in isolated environment
