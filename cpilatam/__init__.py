@@ -13,6 +13,8 @@ __version__ = "2023.11.1"
 SETTINGS = init_settings()
 logger = configure_logging(__app_name__ + " - v" + __version__, SETTINGS, kidnap_loggers=True)
 
+# TODO: Add border case at the init if the file doesn't exist
+
 DF_CPI_PERU = pd.read_csv(SETTINGS.PERU_LOCAL_PATH.as_posix())
 DF_CPI_COLOMBIA = pd.read_csv(SETTINGS.COLOMBIA_LOCAL_PATH.as_posix())
 
