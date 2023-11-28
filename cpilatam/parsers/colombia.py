@@ -67,7 +67,6 @@ class ColombiaCPIParser:
             cleaned_data["Mes"] = cleaned_data["Mes"].map(self.month_map)
 
             # Pivot the DataFrame to obtain a flattened time series
-            # TODO: Filter the dates after current date
             flattened_data = cleaned_data.melt(id_vars=["Mes"], var_name="Año", value_name=CPIColumns.CPI.value)
 
             # Convert years to numeric
@@ -83,6 +82,16 @@ class ColombiaCPIParser:
 
             # Add the obtained date
             flattened_data[CPIColumns.REFERENCE_DATE.value] = obtained_date
+
+            # Filter the non nan data
+            first_non_nan = flattened_data[CPIColumns.CPI.value].first_valid_index()
+            last_non_nan = flattened_data[CPIColumns.CPI.value].last_valid_index()
+
+            # Slice the dataframe
+            flattened_data = flattened_data.loc[first_non_nan:last_non_nan]
+
+            # Fill the NaN values with the previous value in the range (in place)
+            flattened_data[CPIColumns.CPI.value].fillna(method="ffill", inplace=True)
 
             # Updated self.data and slice
             self.data = flattened_data[
