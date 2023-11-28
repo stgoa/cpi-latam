@@ -1,15 +1,15 @@
 import pandas as pd
 import pytest
 
-from cpilatam.parsers.base import CPI_SCHEMA
 from cpilatam.parsers.colombia import ColombiaCPIParser
+from cpilatam.schemas import CPI_SCHEMA
 
 
 class TestColombiaParser:
     @pytest.fixture
     def setUp(self, monkeypatch):
         # crear instancia
-        self.parser = ColombiaCPIParser()
+        self.parser = ColombiaCPIParser(local_file_path="data/raw/colombia.xlsx")
 
         # mock download using monkeypatch
         monkeypatch.setattr(self.parser, "download", self.mock_download)

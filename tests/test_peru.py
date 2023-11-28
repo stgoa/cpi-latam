@@ -1,15 +1,15 @@
 import pandas as pd
 import pytest
 
-from cpilatam.parsers.base import CPI_SCHEMA
 from cpilatam.parsers.peru import PeruCPIParser
+from cpilatam.schemas import CPI_SCHEMA
 
 
 class TestPeruParser:
     @pytest.fixture
     def setUp(self, monkeypatch):
         # crear instancia
-        self.parser = PeruCPIParser(local_file_path="data/raw/peru.csv")
+        self.parser = PeruCPIParser()
 
         # mock download using monkeypatch
         monkeypatch.setattr(self.parser, "download", self.mock_download)
