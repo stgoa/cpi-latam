@@ -89,10 +89,10 @@ class Settings(BaseSettings):
     LOG_DESTINATION: LogDest = LogDest.CONSOLE.value
     """Destination for logs."""
 
-    COLOMBIA_LOCAL_PATH: Path = Path(PACKAGE_PATH.parent, "data", "clean", "colombia.csv")
+    COLOMBIA_LOCAL_PATH: Path = Path(PACKAGE_PATH, "data", "colombia.csv")
     """Path to local file with Colombia CPI data."""
 
-    PERU_LOCAL_PATH: Path = Path(PACKAGE_PATH.parent, "data", "clean", "peru.csv")
+    PERU_LOCAL_PATH: Path = Path(PACKAGE_PATH, "data", "peru.csv")
     """Path to local file with Peru CPI data."""
 
     class Config:
