@@ -3,42 +3,11 @@
 
 from abc import ABC, abstractmethod
 from datetime import date
-from enum import Enum
 
 import pandas as pd
-from pandera import Check, Column, DataFrameSchema, DateTime, Float
 from pandera.typing import DataFrame
 
-
-class CPIColumns(Enum):
-    """Enum for the CPI columns."""
-
-    DATE = "date"
-    CPI = "cpi"
-    REFERENCE_DATE = "reference_date"
-
-
-CPI_SCHEMA = DataFrameSchema(
-    columns={
-        CPIColumns.DATE.value: Column(
-            DateTime,
-            nullable=False,
-            checks=[
-                Check(lambda x: x.dt.day == 1, error="The day must be the first day of the month."),
-            ],
-        ),
-        CPIColumns.CPI.value: Column(Float, nullable=False),
-        CPIColumns.REFERENCE_DATE.value: Column(
-            DateTime,
-            nullable=False,
-            checks=[
-                Check(lambda x: x.dt.day == 1, error="The day must be the first day of the month."),
-            ],
-        ),
-    },
-    coerce=True,
-    strict=True,
-)
+from cpilatam.schemas import CPI_SCHEMA
 
 
 class BaseCPIParser(ABC):
@@ -119,7 +88,7 @@ class BaseCPIParser(ABC):
     @abstractmethod
     def save(self) -> None:
         """Saves the parsed data to a local csv file."""
-        pass
+        self.data.to_csv(self.local_file_path, index=False)
 
     def read(self) -> None:
         """Reads the parsed csv data from the local csv file into a pandas DataFrame."""
@@ -128,7 +97,7 @@ class BaseCPIParser(ABC):
     def update(self) -> None:
         """Updates the data by downloading the raw data and reading it into a pandas DataFrame."""
         self.download()
-        self.read()
+        self.parse()
 
     def get_data(self) -> DataFrame[CPI_SCHEMA]:
         """Returns the data in a pandas DataFrame with the universal schema.
