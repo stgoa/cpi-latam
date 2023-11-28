@@ -5,15 +5,17 @@ import re
 
 import pandas as pd
 
-from cpilatam.parsers.base import CPIColumns
+from cpilatam import SETTINGS
+from cpilatam.names import Countries, CPIColumns
+from cpilatam.parsers.base import BaseCPIParser
 
 
-class ColombiaCPIParser:
+class ColombiaCPIParser(BaseCPIParser):
     def __init__(self):
         # URL of the Excel file
         self.url = "https://www.dane.gov.co/files/operaciones/IPC/oct23/IPC_Indices.xlsx"
         self.data = None
-        self.local_path = "data/colombia_cpi.csv"
+        self.local_file_path = SETTINGS.COLOMBIA_LOCAL_PATH.as_posix()
 
         self.month_map = {
             "Enero": 1,
@@ -30,14 +32,16 @@ class ColombiaCPIParser:
             "Diciembre": 12,
         }
 
-    def update(self):
-        self.download()
-        self.parse()
-        self.data.to_csv("data/clean/colombia.csv", index=False)
+        super().__init__(
+            local_file_path=SETTINGS.COLOMBIA_LOCAL_PATH.as_posix(),
+            url=self.url,
+            source_format="xlsx",
+            country=Countries.COLOMBIA.value,
+        )
 
     def read(self):
         # Read the Excel file into a pandas DataFrame
-        self.data = pd.read_excel(self.local_path)
+        self.data = pd.read_excel(self.url)
 
     def download(self):
         # Read the Excel file into a pandas DataFrame
@@ -113,6 +117,9 @@ class ColombiaCPIParser:
         else:
             print("No data to parse. Please run the 'download' method first.")
             return None
+
+    def save(self):
+        self.data.to_csv(SETTINGS.COLOMBIA_LOCAL_PATH.as_posix(), index=False)
 
 
 if __name__ == "__main__":
