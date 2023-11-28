@@ -8,7 +8,10 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
-from cpilatam.parsers.base import CPI_SCHEMA, BaseCPIParser, CPIColumns
+from cpilatam import SETTINGS
+from cpilatam.names import Countries, CPIColumns
+from cpilatam.parsers.base import BaseCPIParser
+from cpilatam.schemas import CPI_SCHEMA
 
 
 class PeruCPIParser(BaseCPIParser):
@@ -19,21 +22,15 @@ class PeruCPIParser(BaseCPIParser):
 
     def __init__(
         self,
-        local_file_path,
     ):
         start_date = date(1991, 1, 1).strftime("%Y-%-m")
         end_date = date.today().strftime("%Y-%-m")
         super().__init__(
-            local_file_path=local_file_path,
+            local_file_path=SETTINGS.PERU_LOCAL_PATH.as_posix(),
             url=self.BASE_URL.format(start_date=start_date, end_date=end_date),
             source_format="html",
-            country="Peru",
+            country=Countries.COLOMBIA.value,
         )
-
-    def update(self):
-        self.download()
-        self.parse()
-        self.data.to_csv("data/clean/peru.csv", index=False)
 
     def convert_spanish_date_to_numeric_date(self, date_str: str) -> str:
         """Converts a Spanish date string to a numeric date string.
@@ -163,14 +160,8 @@ class PeruCPIParser(BaseCPIParser):
             print("No data to parse. Please run the 'download' method first.")
             return None
 
-    def read(self, path: str = None):
-        if path is None:
-            path = "./data/raw/peru.csv"
-        self.data = pd.read_csv(path)
-        return self.data
-
     def save(self):
-        pass
+        self.data.to_csv(SETTINGS.PERU_LOCAL_PATH.as_posix(), index=False)
 
 
 if __name__ == "__main__":
