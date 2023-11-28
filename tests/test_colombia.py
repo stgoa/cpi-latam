@@ -1,8 +1,8 @@
 import pandas as pd
 import pytest
 
-from cpilatam.parsers.base import CPI_SCHEMA
 from cpilatam.parsers.colombia import ColombiaCPIParser
+from cpilatam.schemas import CPI_SCHEMA
 
 
 class TestColombiaParser:
