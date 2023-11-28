@@ -1,0 +1,24 @@
+name: Publish Python package
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+        - uses: actions/checkout@v1
+          with:
+            fetch-depth: 1
+
+        - name: Install dependencies and run tests
+          run: docker build --target tester .
+
+        - name: Build and publish wheels
+          env:
+            PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+          run: docker build --build-arg PYPI_TOKEN=$PYPI_TOKEN --target publisher .
