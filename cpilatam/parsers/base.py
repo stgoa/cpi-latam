@@ -85,7 +85,6 @@ class BaseCPIParser(ABC):
         """Downloads the raw data from the internet and saves it to a local file in csv format."""
         pass
 
-    @abstractmethod
     def save(self) -> None:
         """Saves the parsed data to a local csv file."""
         self.data.to_csv(self.local_file_path, index=False)
