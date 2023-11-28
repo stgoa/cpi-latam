@@ -97,6 +97,7 @@ class BaseCPIParser(ABC):
         """Updates the data by downloading the raw data and reading it into a pandas DataFrame."""
         self.download()
         self.parse()
+        self.save()
 
     def get_data(self) -> DataFrame[CPI_SCHEMA]:
         """Returns the data in a pandas DataFrame with the universal schema.
