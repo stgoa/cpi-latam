@@ -9,7 +9,7 @@ class TestColombiaParser:
     @pytest.fixture
     def setUp(self, monkeypatch):
         # crear instancia
-        self.parser = ColombiaCPIParser(local_file_path="data/raw/colombia.xlsx")
+        self.parser = ColombiaCPIParser()
 
         # mock download using monkeypatch
         monkeypatch.setattr(self.parser, "download", self.mock_download)
