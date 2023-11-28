@@ -83,6 +83,11 @@ class ColombiaCPIParser:
             # Add the obtained date
             flattened_data[CPIColumns.REFERENCE_DATE.value] = obtained_date
 
+            # Filter the data beyond the today date
+            flattened_data = flattened_data[
+                flattened_data[CPIColumns.DATE.value] <= pd.Timestamp.now().normalize()
+            ]
+
             # Filter the non nan data
             first_non_nan = flattened_data[CPIColumns.CPI.value].first_valid_index()
             last_non_nan = flattened_data[CPIColumns.CPI.value].last_valid_index()
