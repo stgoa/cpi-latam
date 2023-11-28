@@ -1,23 +1,22 @@
 import pandas as pd
 import pytest
 
-from cpilatam.parsers.peru import PeruCPIParser
+from cpilatam.parsers.colombia import ColombiaCPIParser
 from cpilatam.schemas import CPI_SCHEMA
 
 
-class TestPeruParser:
+class TestColombiaParser:
     @pytest.fixture
     def setUp(self, monkeypatch):
         # crear instancia
-        self.parser = PeruCPIParser()
+        self.parser = ColombiaCPIParser()
 
         # mock download using monkeypatch
         monkeypatch.setattr(self.parser, "download", self.mock_download)
 
     def mock_download(self):
         # Read the data and assign it to self.data
-        # The CSV has unrecognized Symbols. Another alternative is to replace those symbols "(?)" to "Í"
-        self.parser.data = pd.read_csv("data/raw/peru.csv", encoding="latin-1")
+        self.parser.data = pd.read_excel("tests/data/colombia.xlsx")
 
     def test_parse(self, setUp):
         # read data
