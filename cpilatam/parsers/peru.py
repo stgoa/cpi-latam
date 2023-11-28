@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 """This module contains a parser for the Peruvian CPI data."""
 
+import re
 from datetime import date
 
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
-from cpilatam.parsers.base import CPI_SCHEMA, BaseCPIParser
+from cpilatam.parsers.base import CPI_SCHEMA, BaseCPIParser, CPIColumns
 
 
 class PeruCPIParser(BaseCPIParser):
@@ -18,10 +19,12 @@ class PeruCPIParser(BaseCPIParser):
 
     def __init__(
         self,
+        local_file_path,
     ):
         start_date = date(1991, 1, 1).strftime("%Y-%-m")
         end_date = date.today().strftime("%Y-%-m")
         super().__init__(
+            local_file_path=local_file_path,
             url=self.BASE_URL.format(start_date=start_date, end_date=end_date),
             source_format="html",
             country="Peru",
@@ -64,14 +67,19 @@ class PeruCPIParser(BaseCPIParser):
             "2021-12-01"
         """
         if self.data is not None:
-            # extract the column name
-            cpi_col = self.data.columns[1]
-            # extract the reference date from the column name
-            reference_date_str = (
-                cpi_col.split("Índice de precios Lima Metropolitana (índice ")[1].split(" =")[0].replace(".", "")
-            )
+            # extract the column that have the information when the data was obtained
+            reference_date_str = self.data.iloc[0, 1]
+            # define the pattern
+            pattern = r"(Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic)\.(\d{4})"
+            # match the pattern
+            match = re.search(pattern, reference_date_str)
+            # extract the reference date
+            month_num = self.month_map[match.group(1)]
+            year = match.group(2)
+            # reference_date = f"{month_num:02d}-{year}"
+            reference_date = pd.to_datetime(f"{year}-{month_num:02d}")
             # convert the reference date to a datetime object
-            reference_date = self.convert_spanish_date_to_numeric_date(reference_date_str)
+            # reference_date = self.convert_spanish_date_to_numeric_date(reference_date_str)
             self.reference_date = reference_date
         else:
             print("No data to parse. Please run the 'download' method first.")
@@ -109,14 +117,39 @@ class PeruCPIParser(BaseCPIParser):
             # rename the columns
             self.data.columns = ["date", "CPI"]
 
+            # Update self.data, not considering the first row
+            self.data = self.data[1:]
+
             # Extract year and month from the "Fecha" column
             self.data = self.parse_spanish_date_col(self.data)
 
             # Add the reference date to the DataFrame
             self.data["reference_date"] = self.reference_date
 
+            # Replace n.d. values with Nan
+            self.data["CPI"] = self.data["CPI"].replace("n.d.", pd.NA)
+
+            # Get the first and last nan value of CPI
+            first_non_nan = self.data["CPI"].first_valid_index()
+            last_non_nan = self.data["CPI"].last_valid_index()
+
+            # Slice the dataframe
+            self.data = self.data.loc[first_non_nan:last_non_nan]
+
+            # Fill the NaN values with the previous value in the range (in place)
+            self.data["CPI"].fillna(method="ffill", inplace=True)
+
             # Select and reorder columns
             self.data = self.data[["date", "reference_date", "CPI"]]
+
+            # Rename columns according to the schema
+            self.data = self.data.rename(
+                columns={
+                    "date": CPIColumns.DATE.value,
+                    "reference_date": CPIColumns.REFERENCE_DATE.value,
+                    "CPI": CPIColumns.CPI.value,
+                }
+            )
 
             # Validate and parse the DataFrame
             self.data = CPI_SCHEMA.validate(self.data)
@@ -127,9 +160,12 @@ class PeruCPIParser(BaseCPIParser):
 
     def read(self, path: str = None):
         if path is None:
-            path = "./data/peru_cpi.csv"
+            path = "./data/raw/peru.csv"
         self.data = pd.read_csv(path)
         return self.data
+
+    def save(self):
+        pass
 
 
 if __name__ == "__main__":
