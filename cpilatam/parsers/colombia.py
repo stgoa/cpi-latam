@@ -40,18 +40,17 @@ class ColombiaCPIParser:
 
     def parse(self):
         if self.data is not None:
-            # TODO: Adapt with the real cell (right upper corner)
             # Get the date of obtanining the data
-            data_obtain_date = self.data.iloc[24, 0]
+            data_obtain_date = self.data.iloc[6, 21]
 
             # Use regex to obtain day month year
-            pattern = r"(\d{2}) de (\w+) de (\d{4})"
+            pattern = r"(\w+) de (\d{4})"
             matches = re.search(pattern, data_obtain_date)
 
             if matches:
-                day, month, year = matches.groups()
-                month = self.month_map[month.capitalize()]
-                obtained_date = pd.to_datetime(f"{year}-{month:02d}-{int(day):02d}")
+                month, year = matches.groups()
+                month = self.month_map[month]
+                obtained_date = pd.to_datetime(f"{year}-{month:02d}")
             else:
                 raise Exception("Date not found")
 
