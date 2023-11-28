@@ -30,6 +30,11 @@ class PeruCPIParser(BaseCPIParser):
             country="Peru",
         )
 
+    def update(self):
+        self.download()
+        self.parse()
+        self.data.to_csv("data/clean/peru.csv", index=False)
+
     def convert_spanish_date_to_numeric_date(self, date_str: str) -> str:
         """Converts a Spanish date string to a numeric date string.
 

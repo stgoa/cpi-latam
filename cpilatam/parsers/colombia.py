@@ -30,6 +30,11 @@ class ColombiaCPIParser:
             "Diciembre": 12,
         }
 
+    def update(self):
+        self.download()
+        self.parse()
+        self.data.to_csv("data/clean/colombia.csv", index=False)
+
     def read(self):
         # Read the Excel file into a pandas DataFrame
         self.data = pd.read_excel(self.local_path)
