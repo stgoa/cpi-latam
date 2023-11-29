@@ -83,10 +83,11 @@ class PeruCPIParser(BaseCPIParser):
             # reference_date = self.convert_spanish_date_to_numeric_date(reference_date_str)
             self.reference_date = reference_date
         else:
-            print("No data to parse. Please run the 'download' method first.")
+            logger.info("No data to parse. Please run the 'download' method first.")
             return None
 
-    def download(self):
+    def download(self) -> None:
+        """Downloads the data from the url and stores it in the self.data attribute."""
         logger.info("Downloading data from %s", self.url)
         # Send a GET request to the URL
         response = requests.get(self.url, timeout=10)
@@ -111,7 +112,9 @@ class PeruCPIParser(BaseCPIParser):
                 response.status_code,
             )
 
-    def parse(self):
+    def parse(self) -> None:
+        """Parses the source cpi data into a pandas DataFrame with the universal schema."""
+        logger.info(f"Parsing the data of {self.country}")
         if self.data is not None:
             # Extract reference date from the column name
             self.set_reference_date()
@@ -156,9 +159,6 @@ class PeruCPIParser(BaseCPIParser):
         else:
             logger.info("No data to parse. Please run the 'download' method first.")
             return None
-
-    def save(self):
-        self.data.to_csv(SETTINGS.PERU_LOCAL_PATH.as_posix(), index=False)
 
 
 if __name__ == "__main__":

@@ -5,7 +5,7 @@ import re
 
 import pandas as pd
 
-from cpilatam import SETTINGS
+from cpilatam import SETTINGS, logger
 from cpilatam.names import Countries, CPIColumns
 from cpilatam.parsers.base import BaseCPIParser
 
@@ -18,15 +18,15 @@ class ColombiaCPIParser(BaseCPIParser):
             country=Countries.COLOMBIA.value,
         )
 
-    def read(self):
+    def download(self) -> None:
+        """Downloads the data from the url and stores it in the self.data attribute."""
+        logger.info("Downloading data from %s", self.url)
         # Read the Excel file into a pandas DataFrame
         self.data = pd.read_excel(self.url)
 
-    def download(self):
-        # Read the Excel file into a pandas DataFrame
-        self.data = pd.read_excel(self.url)
-
-    def parse(self):
+    def parse(self) -> None:
+        """Parses the source cpi data into a pandas DataFrame with the universal schema."""
+        logger.info(f"Parsing the data of {self.country}")
         if self.data is not None:
             # Get the date of obtanining the data
             data_obtain_date = self.data.iloc[6, 21]
@@ -91,19 +91,16 @@ class ColombiaCPIParser(BaseCPIParser):
                 [CPIColumns.DATE.value, CPIColumns.CPI.value, CPIColumns.REFERENCE_DATE.value]
             ]
 
-            return self.data
-
         else:
-            print("No data to parse. Please run the 'download' method first.")
+            logger.info("No data to parse. Please run the 'download' method first.")
             return None
-
-    def save(self):
-        self.data.to_csv(SETTINGS.COLOMBIA_LOCAL_PATH.as_posix(), index=False)
 
 
 if __name__ == "__main__":
     parser = ColombiaCPIParser()
-    # parser.download()
-    parser.read()
-    data = parser.parse()
-    print(data)
+    # Download data
+    parser.download()
+
+    # Parse and display the transformed data
+    parser.parse()
+    print(parser.data)
