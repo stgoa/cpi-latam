@@ -13,12 +13,10 @@ __version__ = "2023.11.1"
 SETTINGS = init_settings()
 logger = configure_logging(__app_name__ + " - v" + __version__, SETTINGS, kidnap_loggers=True)
 
-# TODO: Add border case at the init if the file doesn't exist
-
-DF_CPI_PERU = pd.read_csv(SETTINGS.PERU_LOCAL_PATH.as_posix())
-DF_CPI_COLOMBIA = pd.read_csv(SETTINGS.COLOMBIA_LOCAL_PATH.as_posix())
-
-DF_CPI = {Countries.PERU.value: DF_CPI_PERU, Countries.COLOMBIA.value: DF_CPI_COLOMBIA}
+DF_CPI = {
+    Countries.PERU.value: pd.read_csv(SETTINGS.PERU_LOCAL_PATH.as_posix()),
+    Countries.COLOMBIA.value: pd.read_csv(SETTINGS.COLOMBIA_LOCAL_PATH.as_posix()),
+}
 
 for key, item in DF_CPI.items():
     if item[CPIColumns.DATE.value].max() <= pd.to_datetime("today").strftime("%Y-%m-%d"):
@@ -32,4 +30,7 @@ def update(countries: list = None):
         countries = DF_CPI.keys()
     for parser in __parsers__:
         if parser.country in countries:
+            logger.info(f"Updating {parser.country} data...")
             parser.update()
+            # replace the dataframe in the DF_CPI dictionary
+            DF_CPI[parser.country] = parser.data
