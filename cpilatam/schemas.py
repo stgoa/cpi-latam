@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+"""This module contains the schema for the CPI data."""
+
 from pandera import Check, Column, DataFrameSchema, DateTime, Float
 
 from cpilatam.names import CPIColumns

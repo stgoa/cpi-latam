@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+"""Names for the CPI Latam package."""
+
 from enum import Enum
 
 
