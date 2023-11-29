@@ -11,7 +11,7 @@ RUN poetry install --no-dev --no-interaction --no-ansi
 FROM base as tester
 COPY tests ./tests
 RUN pip install pytest
-RUN pytest -s -vvv
+RUN pytest -s -vvv -m "not scrapping"
 # Publish image
 FROM base AS publisher
 ARG PYPI_TOKEN
