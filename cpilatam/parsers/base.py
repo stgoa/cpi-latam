@@ -54,19 +54,13 @@ class BaseCPIParser(ABC):
         Attributes:
             url (str): The url to the source data.
             data (pd.DataFrame): The data in a pandas DataFrame with the universal schema.
-            reference_date (date): The reference/pivot for the CPI valuees.
-            start_date (date): The start date of the CPI data.
-            end_date (date): The end date of the CPI data.
-            source_format (str): The format of the source data (e.g. csv, xls, etc.)
+            reference_date (date): The reference/pivot for the CPI values.
             country (str): The country of the CPI data.
         """
         self.local_file_path: str = local_file_path
         self.url: str = url
         self.data: pd.DataFrame = None
         self.reference_date: date = None
-        self.start_date: date = None
-        self.end_date: date = None
-        self.source_format: str = source_format
         self.country: str = country
         # initialize the data
         self.read()

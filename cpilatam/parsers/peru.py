@@ -28,7 +28,6 @@ class PeruCPIParser(BaseCPIParser):
         super().__init__(
             local_file_path=SETTINGS.PERU_LOCAL_PATH.as_posix(),
             url=self.BASE_URL.format(start_date=start_date, end_date=end_date),
-            source_format="html",
             country=Countries.COLOMBIA.value,
         )
 

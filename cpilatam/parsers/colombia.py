@@ -12,29 +12,9 @@ from cpilatam.parsers.base import BaseCPIParser
 
 class ColombiaCPIParser(BaseCPIParser):
     def __init__(self):
-        # URL of the Excel file
-        self.url = "https://www.dane.gov.co/files/operaciones/IPC/oct23/IPC_Indices.xlsx"
-        self.data = None
-        self.local_file_path = SETTINGS.COLOMBIA_LOCAL_PATH.as_posix()
-
-        self.month_map = {
-            "Enero": 1,
-            "Febrero": 2,
-            "Marzo": 3,
-            "Abril": 4,
-            "Mayo": 5,
-            "Junio": 6,
-            "Julio": 7,
-            "Agosto": 8,
-            "Septiembre": 9,
-            "Octubre": 10,
-            "Noviembre": 11,
-            "Diciembre": 12,
-        }
-
         super().__init__(
             local_file_path=SETTINGS.COLOMBIA_LOCAL_PATH.as_posix(),
-            url=self.url,
+            url="https://www.dane.gov.co/files/operaciones/IPC/oct23/IPC_Indices.xlsx",
             source_format="xlsx",
             country=Countries.COLOMBIA.value,
         )
