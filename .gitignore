@@ -164,6 +164,7 @@ poetry.lock
 
 # Visual Studio Code
 .vscode/settings.json
+.vscode/
 
 # MacOs
 .DS_Store
