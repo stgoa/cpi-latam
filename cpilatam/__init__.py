@@ -4,7 +4,7 @@
 import pandas as pd
 
 from cpilatam.logger import configure_logging
-from cpilatam.names import Countries
+from cpilatam.names import Countries, CPIColumns
 from cpilatam.settings import init_settings
 
 __app_name__ = "cpilatam"
@@ -21,7 +21,7 @@ DF_CPI_COLOMBIA = pd.read_csv(SETTINGS.COLOMBIA_LOCAL_PATH.as_posix())
 DF_CPI = {Countries.PERU.value: DF_CPI_PERU, Countries.COLOMBIA.value: DF_CPI_COLOMBIA}
 
 for key, item in DF_CPI.items():
-    if item["date"].max() <= pd.to_datetime("today").strftime("%Y-%m-%d"):
+    if item[CPIColumns.DATE.value].max() <= pd.to_datetime("today").strftime("%Y-%m-%d"):
         logger.warn(f"The data is not up to date in the {key} country. Please run the update script.")
 
 
