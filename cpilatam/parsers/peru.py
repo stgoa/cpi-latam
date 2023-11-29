@@ -8,7 +8,7 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
-from cpilatam import SETTINGS
+from cpilatam import SETTINGS, logger
 from cpilatam.names import Countries, CPIColumns
 from cpilatam.parsers.base import BaseCPIParser
 from cpilatam.schemas import CPI_SCHEMA
@@ -70,7 +70,7 @@ class PeruCPIParser(BaseCPIParser):
         """
         if self.data is not None:
             # extract the column that have the information when the data was obtained
-            reference_date_str = self.data.iloc[0, 1]
+            reference_date_str = self.data.columns[1]
             # define the pattern
             pattern = r"(Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic)\.(\d{4})"
             # match the pattern
@@ -88,6 +88,7 @@ class PeruCPIParser(BaseCPIParser):
             return None
 
     def download(self):
+        logger.info("Downloading data from %s", self.url)
         # Send a GET request to the URL
         response = requests.get(self.url, timeout=10)
 
@@ -104,9 +105,9 @@ class PeruCPIParser(BaseCPIParser):
                 # Use pandas to read the HTML table into a DataFrame
                 self.data = pd.read_html(str(table))[0]
             else:
-                print("Table not found on the webpage.")
+                logger.error("Table not found on the webpage.")
         else:
-            print(
+            logger.error(
                 "Failed to retrieve the webpage. Status code:",
                 response.status_code,
             )
@@ -118,9 +119,6 @@ class PeruCPIParser(BaseCPIParser):
 
             # rename the columns
             self.data.columns = ["date", "CPI"]
-
-            # Update self.data, not considering the first row
-            self.data = self.data[1:]
 
             # Extract year and month from the "Fecha" column
             self.data = self.parse_spanish_date_col(self.data)
@@ -157,7 +155,7 @@ class PeruCPIParser(BaseCPIParser):
             self.data = CPI_SCHEMA.validate(self.data)
 
         else:
-            print("No data to parse. Please run the 'download' method first.")
+            logger.info("No data to parse. Please run the 'download' method first.")
             return None
 
     def save(self):
@@ -173,5 +171,5 @@ if __name__ == "__main__":
     parser.download()
 
     # Parse and display the transformed data
-    parsed_data = parser.parse()
-    print(parsed_data)
+    parser.parse()
+    print(parser.data)
