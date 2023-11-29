@@ -15,7 +15,6 @@ class ColombiaCPIParser(BaseCPIParser):
         super().__init__(
             local_file_path=SETTINGS.COLOMBIA_LOCAL_PATH.as_posix(),
             url="https://www.dane.gov.co/files/operaciones/IPC/oct23/IPC_Indices.xlsx",
-            source_format="xlsx",
             country=Countries.COLOMBIA.value,
         )
 

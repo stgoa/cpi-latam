@@ -42,16 +42,16 @@ class BaseCPIParser(ABC):
         "Diciembre": 12,
     }
 
-    def __init__(self, local_file_path: str, url: str, source_format: str, country: str):
+    def __init__(self, local_file_path: str, url: str, country: str):
         """Initializes the parser.
 
         Args:
             local_file_path (str): The path to the local file.
             url (str): The url to the source data.
-            source_format (str): The format of the source data (e.g. csv, xls, etc.)
             country (str): The country of the CPI data.
 
         Attributes:
+            local_file_path (str): The path to the local file.
             url (str): The url to the source data.
             data (pd.DataFrame): The data in a pandas DataFrame with the universal schema.
             reference_date (date): The reference/pivot for the CPI values.
@@ -62,8 +62,6 @@ class BaseCPIParser(ABC):
         self.data: pd.DataFrame = None
         self.reference_date: date = None
         self.country: str = country
-        # initialize the data
-        self.read()
 
     @abstractmethod
     def parse(self) -> None:
@@ -82,10 +80,6 @@ class BaseCPIParser(ABC):
     def save(self) -> None:
         """Saves the parsed data to a local csv file."""
         self.data.to_csv(self.local_file_path, index=False)
-
-    def read(self) -> None:
-        """Reads the parsed csv data from the local csv file into a pandas DataFrame."""
-        self.data = pd.read_csv(self.local_file_path, parse_dates=["date"])
 
     def update(self) -> None:
         """Updates the data by downloading the raw data and reading it into a pandas DataFrame."""
